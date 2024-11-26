@@ -2,16 +2,14 @@ package uz.pdp.servlet;
 
 import uz.pdp.DB.DB;
 import uz.pdp.OrderStatus;
+import uz.pdp.entity.Basket;
 import uz.pdp.entity.Order;
 import uz.pdp.entity.OrderProduct;
 import uz.pdp.entity.Product;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -44,7 +42,10 @@ public class    OrderServlet extends HttpServlet {
         order.setDateTime(new Date());
         order.setStatus(OrderStatus.NEW);
         List<OrderProduct> list = new ArrayList<>();
-        for (Map.Entry<Product, Integer> entry : DB.map.entrySet()) {
+        HttpSession session = req.getSession();
+        Basket basket = (Basket) Objects.requireNonNullElse(session.getAttribute("basket"), new Basket());
+        Map<Product, Integer> mapBasket = basket.getMapBasket();
+        for (Map.Entry<Product, Integer> entry : mapBasket.entrySet()) {
             OrderProduct orderProduct = new OrderProduct();
             orderProduct.setOrderId(order.getId());
             orderProduct.setProductId(entry.getKey().getId());
@@ -53,7 +54,7 @@ public class    OrderServlet extends HttpServlet {
         }
         orderListMap.put(order, list);
         orders.put(id, orderListMap);
-               DB.map.clear();
+        session.removeAttribute("basket");
        resp.sendRedirect("/myOrders.jsp");
     }
 }

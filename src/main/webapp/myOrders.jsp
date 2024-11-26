@@ -46,18 +46,7 @@
             <p class="mb-0 col">Order Status: <%= order.getKey().getStatus() %></p>
             <a href="/orderItem?orderId=<%=order.getKey().getId()%>" type="button" class="btn btn-success col">Show</a>
         </div>
-<%--        <ul class="list-group list-group-flush">--%>
-<%--            <%--%>
-<%--                Product product = DB.getProductById(orderProduct.getProductId());--%>
-<%--                if (product != null) {--%>
-<%--            %>--%>
-<%--            <li class="list-group-item">--%>
-<%--                <strong>Product:</strong> <%= product.getName() %> <br>--%>
-<%--                <strong>Quantity:</strong> <%= orderProduct.getQuantity() %> <br>--%>
-<%--                <strong>Price:</strong> <%= product.getPrice() * orderProduct.getQuantity() %> $--%>
-<%--            </li>--%>
-<%--            <% } %>--%>
-<%--        </ul>--%>
+
     </div>
     <% } %>
     <% } else { %>

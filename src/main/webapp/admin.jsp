@@ -34,33 +34,6 @@
 <body>
 
 <%
-    Cookie[] cookies = request.getCookies();
-    if (cookies == null) {
-        response.sendRedirect("/login.jsp");
-        return;
-    }
-    boolean active = false;
-    for (Cookie cookie : cookies) {
-        if (cookie.getName().equals("admin")) {
-            String value = cookie.getValue();
-            String key = "youneverfindit";
-            Base64.Encoder encoder = Base64.getEncoder();
-            String string = encoder.encodeToString(key.getBytes());
-            if (value.equals(string)) {
-                active = true;
-            }
-        }
-        if (active) {
-
-        } else {
-            response.sendRedirect("/login.jsp");
-            return;
-        }
-    }
-
-%>
-
-<%
     String name = request.getParameter("name");
     if (name != null && !name.isEmpty()) {
         Category category = new Category(name);

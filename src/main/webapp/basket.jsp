@@ -2,6 +2,8 @@
 <%@ page import="uz.pdp.DB.DB" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="uz.pdp.entity.Basket" %>
+<%@ page import="java.util.Objects" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -103,11 +105,14 @@
         &larr; Back
     </a>
 
-    <h1 class="mb-4 text-center">Cart</h1>
-    <form method="post" action="updateCard.jsp">
+    <h1 class="mb-4 text-center">Basket</h1>
+    <form method="post" action="updateBasket.jsp">
         <%
             double sum = 0;
-            for (Map.Entry<Product, Integer> entry : DB.map.entrySet()) {
+            session = request.getSession();
+            Basket basket = (Basket) Objects.requireNonNullElse(session.getAttribute("basket"), new Basket());
+            Map<Product, Integer> mapBasket = basket.getMapBasket();
+            for (Map.Entry<Product, Integer> entry : mapBasket.entrySet()) {
                 Product product = entry.getKey();
                 int quantity = entry.getValue();
                 double totalPrice = product.getPrice() * quantity;

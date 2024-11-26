@@ -3,6 +3,8 @@
 <%@ page import="uz.pdp.entity.Product" %>
 <%@ page import="java.util.stream.Collectors" %>
 <%@ page import="java.util.*" %>
+<%@ page import="uz.pdp.entity.Basket" %>
+<%@ page import="uz.pdp.entity.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -83,7 +85,23 @@
             margin-bottom: 10px;
         }
 
-
+        .profile-container {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Rasm va username orasidagi masofa */
+        }
+        .profile-container img {
+            width: 40px; /* Rasm o‘lchami */
+            height: 40px;
+            border-radius: 50%; /* Dumaloq shakl uchun */
+            object-fit: cover; /* Rasmni chiroyli joylash */
+        }
+        .profile-container p {
+            margin: 0;
+            font-size: 16px; /* Username shrift o‘lchami */
+            color: #333; /* Matn rangi */
+            font-weight: bold; /* Matnni qalin qilish */
+        }
     </style>
 </head>
 <body>
@@ -103,6 +121,17 @@
             }
 
         }
+    }
+
+    session = request.getSession();
+    Object user = session.getAttribute("user");
+    User currentUser = null;
+    if (user != null) {
+        currentUser = (User) user;
+    }
+    String username = null;
+    if (currentUser != null) {
+        username = currentUser.getUsername();
     }
 %>
 
@@ -124,13 +153,15 @@
         products = new ArrayList<>(DB.products.stream()
                 .filter(p -> p.getCategoryId() == id).toList());
     }
+    session = request.getSession();
+    Basket basket = (Basket) Objects.requireNonNullElse(session.getAttribute("basket"), new Basket());
+    Map<Product, Integer> mapBasket = basket.getMapBasket();
     if (productId != null && !productId.isEmpty()) {
         int proid = Integer.parseInt(productId);
         Product product = DB.products.stream().filter(p -> p.getId() == proid).findFirst().orElseThrow();
-        DB.map.put(product, DB.map.getOrDefault(product, 0) + 1);
+        mapBasket.put(product,mapBasket.getOrDefault(product, 0) + 1);
+        session.setAttribute("basket",basket);
     }
-
-
 %>
 <div class="row-container">
     <!-- Sidebar -->
@@ -154,21 +185,37 @@
     <!-- Main Content -->
     <div class="content">
         <h1>Products List</h1>
-        <%
-        if (!active) {
-            %>
-             <a href="/login.jsp">
-                     <button class="btn btn-secondary mb-3">Login</button>
-                                   </a>
-        <%}%>
-        <a href="cart.jsp">
-            <button class="btn btn-primary mb-3">Cart <%=DB.map.size()%></button>
-        </a>
-        <% if (active) {%>
-             <a href="myOrders.jsp">
-                     <button class="btn btn-primary mb-3">MyOrders</button>
-                                   </a>
-        <%}%>
+        <div class="d-flex">
+            <%
+            if (!active) {
+                %>
+                 <a href="/login.jsp" class="me-2">
+                         <button class="btn btn-secondary mb-3">Login</button>
+                                       </a>
+            <%}%>
+            <a href="basket.jsp" class="me-2">
+                <button class="btn btn-primary mb-3">Basket <%=mapBasket.size()%></button>
+            </a>
+            <% if (active) {%>
+                 <a href="myOrders.jsp" class="me-2">
+                         <button class="btn btn-primary mb-3">MyOrders</button>
+                                       </a>
+            <div class="d-flex align-items-center ms-auto gap-3">
+                <!-- Log out button -->
+                <a href="/logout">
+                    <button class="btn btn-dark">Log out</button>
+                </a>
+
+                <!-- Profile Section -->
+                <div class="profile-container d-flex align-items-center">
+                    <img src="images/img/account-icon.jpg" alt="account.jpg">
+                    <p class="ms-2 mb-0"><%=username%></p>
+                </div>
+            </div>
+
+
+            <%}%>
+        </div>
 
         <div class="row row-cols-4 g-4">
             <% for (Product product : products) { %>
@@ -181,11 +228,11 @@
                         <input type="hidden" name="productId" value="<%=product.getId()%>">
                         <input type="hidden" name="categoryId" value="<%=product.getCategoryId()%>">
                         <input type="hidden" name="categorylength" value="<%=products.size()%>">
-                        <% if (DB.map.get(product) != null) { %>
-                        <p>Added</p>
+                        <% if (mapBasket.get(product) != null) { %>
+                        <a HREF="/remove?productID=<%=product.getId()%>" class="btn btn-danger w-100">Remove</a>
                         <%} else {%>
-                        <button class="btn btn-dark w-100 <%=(product.getId() + "").equals(request.getParameter("selectedProduct")) ? "active" : ""%>">
-                            Add to Cart
+                        <button class="btn btn-success w-100 <%=(product.getId() + "").equals(request.getParameter("selectedProduct")) ? "active" : ""%>">
+                            Add to Basket
                         </button>
                         <%}%>
                     </div>

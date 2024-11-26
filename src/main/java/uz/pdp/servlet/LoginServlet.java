@@ -5,10 +5,7 @@ import uz.pdp.entity.User;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Optional;
@@ -35,17 +32,28 @@ public class LoginServlet extends HttpServlet {
             Cookie cookie = new Cookie("userId", String.valueOf(currentUser.getId()));
             resp.addCookie(cookie);
             resp.addCookie(new Cookie("user",string));
-            resp.sendRedirect("/main.jsp");
-        } else if (!phoneNumber.isEmpty() && !password.isEmpty() &&
-                   phoneNumber.equals("+998977777777") && password.equals("7777")) {
-            String key = "youneverfindit";
-            Base64.Encoder encoder = Base64.getEncoder();
-            String string = encoder.encodeToString(key.getBytes());
-            resp.addCookie(new Cookie("admin",string));
-            resp.sendRedirect("/admin.jsp");
+            HttpSession session = req.getSession();
+            Object basket = session.getAttribute("basket");
+            setUserToSession(req, userOptional.get());
+            if (currentUser.getRole().equals("admin")) {
+                System.out.printf("admin");
+                resp.sendRedirect("/admin.jsp");
+                return;
+            } else {
+                if (basket == null) {
+                    resp.sendRedirect("/main.jsp");
+                } else {
+                    resp.sendRedirect("/basket.jsp");
+                }
+            }
         } else {
             resp.sendRedirect("/login.jsp");
         }
+    }
+
+    private void setUserToSession(HttpServletRequest request, User user) {
+        HttpSession session = request.getSession();
+        session.setAttribute("user", user);
     }
 
 }

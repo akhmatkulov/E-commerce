@@ -1,9 +1,7 @@
 package uz.pdp.servlet;
 
-import uz.pdp.DB.DB;
 import uz.pdp.entity.Order;
 import uz.pdp.entity.OrderProduct;
-import uz.pdp.entity.Product;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,12 +9,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @WebServlet("/orderItem")
-public class OrderItem extends HttpServlet {
+public class OrderItemServlet extends HttpServlet {
     public static List<OrderProduct> orderProducts;
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -44,7 +41,7 @@ public class OrderItem extends HttpServlet {
                 orderProducts = order.getValue();
             }
         }
-        OrderItem.orderProducts = orderProducts;
+        OrderItemServlet.orderProducts = orderProducts;
         resp.sendRedirect("/orderItem.jsp");
     }
 }

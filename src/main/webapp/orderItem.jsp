@@ -1,6 +1,6 @@
 <%@ page import="uz.pdp.servlet.OrderServlet" %>
 <%@ page import="uz.pdp.entity.OrderProduct" %>
-<%@ page import="uz.pdp.servlet.OrderItem" %>
+<%@ page import="uz.pdp.servlet.OrderItemServlet" %>
 <%@ page import="uz.pdp.DB.DB" %>
 <%@ page import="uz.pdp.entity.Product" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -28,13 +28,13 @@
             return;
         }
     %>
-    <% for (OrderProduct orderProduct: OrderItem.orderProducts) { %>
+    <% for (OrderProduct orderProduct: OrderItemServlet.orderProducts) { %>
     <div class="card mb-4">
         <div class="card-header d-flex row">
-            <h5 class="col">Product I'd #<%= orderProduct.getProductId() %></h5>
+            <h5 class="col">ProductId #<%= orderProduct.getProductId() %></h5>
             <% Product productById = DB.getProductById(orderProduct.getProductId()); %>
             <p class="mb-0 col">Name: <%= productById.getName() %></p>
-            <p class="mb-0 col">Price: <%= productById.getPrice() %></p>
+            <p class="mb-0 col">Price: <%= productById.getPrice() %>$</p>
             <p class="col">Quantity: <%= orderProduct.getQuantity()%></p>
             <p class="col">Category Id: <%= productById.getCategoryId() %></p>
         </div>
